@@ -1,4 +1,5 @@
 import pandas as pd
 
-df = pd.read_csv (r'calles_de_medellin_con_acoso.csv',sep=";")
-print (df)
+c = "calles_de_medellin_con_acoso.csv"
+df = pd.read_csv(c, sep=";")
+rellenar = df.fillna({"harassmentRisk":df['harassmentRisk'].mean()})
