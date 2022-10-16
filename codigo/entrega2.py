@@ -1,48 +1,56 @@
 import pandas as pd
 
-file = "calles_de_medellin_con_acoso.csv"
-df = pd.read_csv(file, sep=";")
-average = df["harassmentRisk"].mean()
-fill = df.fillna({"harassmentRisk": average})
-graph = {}
-
-for line in fill.index:
-    if fill["oneway"][line]:
-        graph[fill["origin"][line]] = [fill["destination"][line], fill["harassmentRisk"][line], fill["length"][line]]
+df = pd.read_csv('calles_de_medellin_con_acoso.csv', sep=';')
+fill = df.fillna({"harassmentRisk": df['harassmentRisk'].mean()})
+g = {}
+for l in fill.index:
+    value = ((fill["harassmentRisk"][l] + fill["length"][l]) / 2, fill["geometry"][l])
+    origin = fill["origin"][l]
+    destination = fill["destination"][l]
+    if origin not in g:
+        g[origin] = {destination: value}
     else:
-        graph[fill["origin"][line]] = [fill["destination"][line], fill["harassmentRisk"][line], fill["length"][line]]
-        graph[fill["destination"][line]] = [fill["origin"][line], fill["harassmentRisk"][line], fill["length"][line]]
+        g[origin][destination] = value
+    if fill["oneway"][l]:
+        if destination not in g:
+            g[destination] = {origin: value}
+        else:
+            g[destination][origin] = value
 
-# Algoritmo:
-# takes the graph and the starting node
-# returns a list of distances from the starting node to every other node
-def naive_dijkstras(graph, root):
-    n = len(graph)
-    # initialize distance list as all infinities
-    dist = [Inf for _ in range(n)]
-    # set the distance for the root to be 0
-    dist[root] = 0
-    # initialize list of visited nodes
-    visited = [False for _ in range(n)]
-    # loop through all the nodes
-    for _ in range(n):
-        # "start" our node as -1 (so we don't have a start node yet)
-        u = -1
-        # loop through all the nodes to check for visitation status
-        for i in range(n):
-            # if the node 'i' hasn't been visited and
-            # we haven't processed it or the distance we have for it is less
-            # than the distance we have to the "start" node
-            if not visited[i] and (u == -1 or dist[i] < dist[u]):
-                u = i
-        # all the nodes have been visited or we can't reach this node
-        if dist[u] == Inf:
+
+def dijkstra(start, goal):
+    dist = {}
+    pre = {}
+    unseen = g
+    path = []
+    inf = 99999999999999999
+    for l in unseen:
+        dist[l] = inf
+    dist[start] = 0
+    while unseen:
+        before = None
+        for o in unseen:
+            if before is None or dist[o] < dist[before]:
+                before = o
+        options = g[before].items()
+        for child, weight in options:
+            if weight[0] + dist[before] < dist[child]:
+                dist[child] = weight[0] + dist[before]
+                pre[child] = before
+        unseen.pop(before)
+    current = goal
+    while current is not start:
+        try:
+            path.insert(0, current)
+            current = pre[current]
+        except KeyError:
             break
-        # set the node as visited
-        visited[u] = True
-        # compare the distance to each node from the "start" node
-        # to the distance we currently have on file for it
-        for v, l in graph[u]:
-            if dist[u] + l < dist[v]:
-                dist[v] = dist[u] + l
-    return dist
+    path.insert(0, start)
+    if dist[goal] is not inf:
+        print("Shortest distance and harassment is", dist[goal])
+        print("Optimal path is", path)
+    else:
+        print("Path is not reachable")
+
+
+dijkstra("(-75.5728593, 6.2115169)", "(-75.5705604, 6.2105262)")
