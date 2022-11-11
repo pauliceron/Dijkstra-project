@@ -18,4 +18,4 @@ for i in range(3):
         mapa.scatter(latitud, longitud, size=20, marker=False)
         mapa.plot(latitud, longitud, edge_width=7)
 
-mapa.draw('')
+mapa.draw('ST0245-002/codigo')
