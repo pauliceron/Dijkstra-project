@@ -2,7 +2,7 @@ import pandas as pd
 from general import general
 import gmplot
 
-df = pd.read_csv('C:/Users/Isa/Downloads/calles_de_medellin_con_acoso.csv', sep=';')
+df = pd.read_csv('calles_de_medellin_con_acoso.csv', sep=';')
 dataframe = df.fillna({"harassmentRisk": df['harassmentRisk'].mean()})
 mapa = gmplot.GoogleMapPlotter(6.2115169, -75.5728593, 14)
 
