@@ -7,7 +7,7 @@ dataframe = df.fillna({"harassmentRisk": df['harassmentRisk'].mean()})
 mapa = gmplot.GoogleMapPlotter(6.2115169, -75.5728593, 14)
 
 for i in range(3):
-    ruta = general.dijkstra(general.grafo(dataframe, i), "(-75.5728593, 6.2115169)", "(-75.5705604, 6.2105262)")
+    ruta = general.dijkstra(general.grafo(dataframe, i), "(-75.5778046, 6.2029412)", "(-75.5762232, 6.266327)")
     latitud = []
     longitud = []
 
